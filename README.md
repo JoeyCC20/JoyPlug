@@ -7,7 +7,7 @@
 - 3.支持纯业务逻辑（无界面）的插件设计
 - 4.插件作为独立的Apk无感接入
 - 5.简洁的宿主-插件路由API
-<img src="docs/readme_view_sample.png" width=100 height=250>
+  <img src="docs/readme_view_sample.png" width=200 height=450>
 ## 理念
 - 1.每个插件以包名为唯一标识。这在插件管理、插件路由等方面有所体现
 - 2.插件自动寻找运行最新版本的apk
@@ -15,7 +15,7 @@
 
 
 ## 接入指南
-### 宿主
+### 【宿主】
 #### 1. gradle
 > Demo：host_sample
 ```
@@ -79,8 +79,31 @@ val netService = HostServiceCenter.getService<NetService>()
 val ret = netService?.GET(URL("https://www.test.com"))
 ```
 
+### 5.跳转插件Activity：
+```
+PluginRouter.startActivity(
+                requireActivity(),
+                "com.joybox.joyplug.activity_plugin_sample",
+                "com.joybox.joyplug.activity_plugin_sample.MainActivity",
+                extras
+            )
+```
+### 6. 引用插件View
 
-### 插件
+```
+<com.joybox.joyplug.host.core.component.PluginComponentView
+        android:id="@+id/plugin_view"
+        app:packageName="com.joybox.joyplug.view_plugin_sample"
+        app:view="com.joybox.joyplug.view_plugin_sample.SampleView"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_dashboard"
+        />
+```
+
+### 【插件】
 #### 独立App
 > Demo：activity_plugin_sample
 
@@ -93,13 +116,10 @@ id("com.joybox.joyplug.replacement")
 <p>在debug模式下，该插件将不会运行，以支持插件app独立运行调试。</p>
 <p>在release模式下，插件将执行Replace动作。原始Activity等类将替换成定制的插件Activity</p>
 
-##### 跳转Activity
+##### 在插件中跳转Activity
 ```
-PluginRouter.startActivity(
-	context,
-	"com.joybox.joyplug.activity_plugin_sample", // 插件包名
-	"com.joybox.joyplug.activity_plugin_sample.MainActivity" // 目标Activity
-)
+val intent = PluginIntent("com.joybox.joyplug.activity_plugin_sample.MainActivity")
+context.startActivity(intent)
 
 ```
 
