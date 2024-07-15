@@ -7,7 +7,8 @@
 - 3.支持纯业务逻辑（无界面）的插件设计
 - 4.插件作为独立的Apk无感接入
 - 5.简洁的宿主-插件路由API
-  <img src="docs/readme_view_sample.png" width=200 height=450>
+<p></p>
+  <img src="docs/readme_view_sample.png" width=300 height=450>
 ## 理念
 - 1.每个插件以包名为唯一标识。这在插件管理、插件路由等方面有所体现
 - 2.插件自动寻找运行最新版本的apk
