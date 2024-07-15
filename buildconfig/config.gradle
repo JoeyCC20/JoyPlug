@@ -1,0 +1,15 @@
+ext {
+    publishVersion = [
+            host : "1.0.0",
+            plugcore : "1.0.0",
+            services : "1.0.0",
+            replacement : "1.0.0"
+    ]
+    getPublishVersion = {
+        if ("host" == project.name) return publishVersion.host
+        else if ("plugcore" == project.name) return publishVersion.plugcore
+        else if ("services" == project.name) return publishVersion.services
+        else if ("replacement" == project.name) return publishVersion.replacement
+        else return ""
+    }
+}

@@ -1,0 +1,66 @@
+project.plugins.apply("maven-publish")
+
+def rootDir = rootProject.projectDir.absolutePath
+apply from:  rootDir + '/buildconfig/config.gradle'
+
+static def isDependencyAccept(name) {
+    def dependencyScopeList = ["Compile",  "Implementation", "Api"]
+    def buildTypes = ["release", "debug"]
+
+    for (buildType in buildTypes) {
+        for (scope in dependencyScopeList) {
+            if (name.startsWith(buildType) && name.contains(scope) && !name.contains("Test"))
+                return true
+        }
+    }
+    return false
+}
+
+static def makeDependency(scope, groupId, artifactId, version) {
+    Node node = new Node(null, 'dependency')
+    node.appendNode('groupId', groupId)
+    node.appendNode('artifactId', artifactId)
+    node.appendNode('version', version)
+    node.appendNode('scope', scope)
+    return node
+}
+
+publishing {
+    publications {
+        mavenCore(MavenPublication) {
+            groupId 'com.joybox.joyplug'
+            artifactId "${project.name}"
+            version "${project.ext.getPublishVersion()}"
+            artifact "build/outputs/aar/${project.name}-release.aar"
+
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                def scopes = []
+                // 所有依赖项
+                configurations.properties.names.forEach {
+                    if (isDependencyAccept(it)) {
+                        scopes.add(configurations[it])
+                    }
+                }
+
+                scopes.forEach { scope ->
+                    scope.allDependencies.forEach { item ->
+                        println(">> add dependency: ${item.name}");
+                        dependenciesNode.append(makeDependency(scope.name,
+                                                                item.group,
+                                                                item.name,
+                                                                item.version
+                                                                ))
+
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = uri("${rootDir}/repo")
+        }
+    }
+}
+publishMavenCorePublicationToMavenRepository.dependsOn("bundleReleaseAar")
