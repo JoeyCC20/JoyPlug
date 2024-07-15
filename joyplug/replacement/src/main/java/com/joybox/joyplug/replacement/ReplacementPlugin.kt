@@ -10,7 +10,7 @@ import org.gradle.api.Project
 
 class ReplacementPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        println("=== [ReplacementPlugin] run ===")
+        println("[ReplacementPlugin] applied")
 
         target.plugins.withType(AppPlugin::class.java) {
             val androidComponents =

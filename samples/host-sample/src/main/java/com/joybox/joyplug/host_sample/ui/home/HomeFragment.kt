@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.joybox.joyplug.host.core.PluginManager
 import com.joybox.joyplug.host.core.PluginRouter
 import com.joybox.joyplug.host_sample.databinding.FragmentHomeBinding
 
@@ -38,11 +37,16 @@ class HomeFragment : Fragment() {
         homeViewModel.btn.observe(viewLifecycleOwner) {
             btnView.text = it
         }
+
         binding.btnJump.setOnClickListener {
+            val extras = Bundle()
+            extras.putString("testKey", "testValue")
+
             PluginRouter.startActivity(
                 requireActivity(),
                 "com.joybox.joyplug.activity_plugin_sample",
-                "com.joybox.joyplug.activity_plugin_sample.MainActivity"
+                "com.joybox.joyplug.activity_plugin_sample.MainActivity",
+                extras
             )
         }
 

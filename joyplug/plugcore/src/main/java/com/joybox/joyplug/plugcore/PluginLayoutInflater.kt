@@ -51,7 +51,6 @@ class PluginLayoutInflater : LayoutInflater {
     }
 
     override fun cloneInContext(newContext: Context?): LayoutInflater {
-        android.util.Log.i("[joy]", "cloneInContext");
         return PluginLayoutInflater(this, newContext)
     }
 }
