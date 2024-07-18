@@ -60,7 +60,7 @@ PluginManager.init(applicationContext) {
 }
 ```
 
-### 4. 注册供插件使用的服务
+### 4. Services for Plugin
 Host can provide service for plugin by registerService (which will be replaced by Annotation in next version)
 ```
 PluginManager.registerService<NetService>(object : NetService {
