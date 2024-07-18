@@ -1,34 +1,32 @@
-# JoyPlug v0.9
+# 插件化框架 -- JoyPlug v1.0
 
-A lightweight plugin framework for Android.
-For now, it's a basic version
 
-## Features
-- 1.View level plugin supported.
-- 2.Activity (including Fragment) plugin supported. Other components support will be considered.
-- 3.A pure logic plugin, which has no components or views, is supported.
-- 4.A plugin will be developed as a independent APP which can be performed or debugged like a normal APP. 
+## 特性
+- 1.支持View级别的插件化
+- 2.支持四大组件插件化，支持Fragment
+- 3.支持纯业务逻辑（无界面）的插件设计
+- 4.插件作为独立的Apk无感接入
+- 5.简洁的宿主-插件路由API
 <p></p>
   <img src="docs/readme_view_sample.png" width=300 height=450>
 
-## Concept
-- 1.Package name is treated as the identity of each plugin
-- 2.Plugin should not be only a component, but a functional module as well, which can be presented as a service
+## 理念
+- 1.每个插件以包名为唯一标识。这在插件管理、插件路由等方面有所体现
+- 2.插件不仅提供四大组件的能力，同时也可以更轻量化的服务形式存在，提供实时插拔的动态化能力
 
 
-## Guide
-### [Host]
+## 接入指南
+### 【宿主】
 #### 1. gradle
 > Demo：host_sample
 ```
-implementation("com.joybox.joyplug:host:1.0.+") // host framework
-implementation("com.joybox.joyplug:services:1.0.+") // host service interfaces
+implementation("com.joybox.joyplug:host:1.0.+") // 宿主框架
+implementation("com.joybox.joyplug:services:1.0.+") // 宿主服务
 ```
 
-#### 2.add Apk Provider
-<p>'Apk Provider' provides a way to submit a raw plugin package, which may come from the internet or other storage locations, into the PluginLoader for developers.</p>
-<p>In other words, developers should be responsible for the source of the plugin APK, and this will not be considered by the framework.</p>
-<p>When the APK is ready, build an 'ApkRecord' and notify the framework using an 'ApkProvideNotification'.</p>
+#### 2.添加Apk Provider
+<p>Apk Provider作为插件Apk的提供者，供开发者自行提供Apk</p>
+<p>待Apk准备完毕，构建ApkRecord并通过ApkProvideNotification通知框架</p>
 
 ```
 PluginManager.addPluginApkProvider(applicationContext, object :
@@ -61,7 +59,7 @@ PluginManager.init(applicationContext) {
 ```
 
 ### 4. 注册供插件使用的服务
-Host can provide service for plugin by registerService (which will be replaced by Annotation in next version)
+如果插件需要使用宿主提供的能力，可以在module `services`中声明各种服务。并在宿主中注册：
 ```
 PluginManager.registerService<NetService>(object : NetService {
 	override fun GET(url: URL): String {
@@ -76,13 +74,13 @@ PluginManager.registerService<NetService>(object : NetService {
 })
 ```
 
-using in plugin:
+在插件中使用：
 ```
 val netService = HostServiceCenter.getService<NetService>()
 val ret = netService?.GET(URL("https://www.test.com"))
 ```
 
-### 5.Jump to a Activity of a certain plugin
+### 5.跳转插件Activity：
 ```
 PluginRouter.startActivity(
                 requireActivity(),
@@ -91,7 +89,7 @@ PluginRouter.startActivity(
                 extras
             )
 ```
-### 6. integrate a plugin View in the Host or an other Plugin layout 
+### 6. 引用插件View
 
 ```
 <com.joybox.joyplug.host.core.component.PluginComponentView
@@ -106,38 +104,38 @@ PluginRouter.startActivity(
         />
 ```
 
-### [Plugin]
-#### Independent App
+### 【插件】
+#### 独立App
 > Demo：activity_plugin_sample
 
-<p>apply the replacement plugin in gradle:</p>
+<p>在gradle中引入插件：</p>
 
 ```
 id("com.joybox.joyplug.replacement")
 ```
-<p>perform 'build' task.</p>
-<p>in debug mode (BuildType is not release)，this plugin will not work</p>
-<p>in release mode, origin Activity class of this Project will be replaced by customized Activity, which called JoyBaseActivity</p>
+<p>打包即可。</p>
+<p>在debug模式下，该插件将不会运行，以支持插件app独立运行调试。</p>
+<p>在release模式下，插件将执行Replace动作。原始Activity等类将替换成定制的插件Activity</p>
 
-##### Jump to a Activity in the plugin app:
+##### 在插件中跳转Activity
 ```
 val intent = PluginIntent("com.joybox.joyplug.activity_plugin_sample.MainActivity")
 context.startActivity(intent)
 
 ```
 
-#### View Plugin
+#### View插件
 
 > Demo：view_plugin_sample, view_plugin_sample2
-<p>gradle:</p>
+<p>在gradle中引入：</p>
 
 ```
 implementation("com.joybox.joyplug:plugcore:1.0.+")
 ```
+打包即可
 
-then perform build task.
-
-#### host service for plugin:
+#### 插件引用宿主服务
+如果插件需要引用宿主能力（每个能力被打包为Service），可以引用如下模块
 ```
 implementation("com.joybox.joyplug:services:1.0.+")
 ```
